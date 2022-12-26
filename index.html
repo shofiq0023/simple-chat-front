@@ -47,7 +47,9 @@
             Notification.requestPermission(function (permission) {
                 if (permission === "granted") {
                     showNotification();
-                }
+                } else if(permission === "default"){
+                requestAndShowPermission();
+            }
             });
         }
         
