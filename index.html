@@ -21,6 +21,8 @@
     <script>
         // ask username
         var username = prompt('Please tell me your name');
+        var socket = io.connect('https://simple-chat-ypks.onrender.com');
+
         socket.emit('username', username);
 
         var sound = new Audio("./assets/notification.mp3");
@@ -50,7 +52,7 @@
         }
         
         // var socket = io.connect('http://172.16.0.16:8083'); 
-        var socket = io.connect('https://simple-chat-ypks.onrender.com');
+
         // submit text message without reload/refresh the page
         $('form').submit(function (e) {
             e.preventDefault(); // prevents page reloading
@@ -58,6 +60,7 @@
             $('#txt').val('');
             return false;
         });
+
         // append the chat text message
         socket.on('chat_message', function (msg) {
             $('#messages').append($('<li>').html(msg));
@@ -67,6 +70,7 @@
                 showNotification();
             } 
         });
+        
         // append text if someone is online
         socket.on('is_online', function (username) {
             $('#messages').append($('<li>').html(username));
