@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" href="./assets/main.css" type="text/css">
+    <link rel="icon" type="image/x-icon" href="https://freepngimg.com/save/158649-chat-icon-download-free-image/512x512">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js" integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI" crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <ul id="messages"></ul>
+        <form action="/" method="POST" id="chatForm">
+            <textarea id="txt" autocomplete="off" autofocus="on"
+                placeholder="type your message here..." ></textarea>
+            <button>Send <span></span> </button>
+        </form>
+    </div>
+    <script>
+        var sound = new Audio("./assets/notification.mp3");
+        var permission = Notification.permission;
+        function showNotification() {
+            if(document.visibilityState === "visible") {
+                return;
+            }
+
+            var title = "New message";
+            icon = "https://freepngimg.com/save/158649-chat-icon-download-free-image/512x512";
+            var body = "You have a new message";
+            var notification = new Notification(title, { body, icon });
+
+            notification.onclick = () => {
+                notification.close();
+                window.parent.focus();
+            }
+        }
+
+        function requestAndShowPermission() {
+            Notification.requestPermission(function (permission) {
+                if (permission === "granted") {
+                    showNotification();
+                }
+            });
+        }
+        
+        // var socket = io.connect('http://172.16.0.16:8083'); 
+        var socket = io.connect('https://simple-chat-ypks.onrender.com');
+        // submit text message without reload/refresh the page
+        $('form').submit(function (e) {
+            e.preventDefault(); // prevents page reloading
+            socket.emit('chat_message', $('#txt').val());
+            $('#txt').val('');
+            return false;
+        });
+        // append the chat text message
+        socket.on('chat_message', function (msg) {
+            $('#messages').append($('<li>').html(msg));
+            sound.play();
+            
+            if (permission === "granted") {
+                showNotification();
+            } 
+        });
+        // append text if someone is online
+        socket.on('is_online', function (username) {
+            $('#messages').append($('<li>').html(username));
+        });
+        // ask username
+        var username = prompt('Please tell me your name');
+        socket.emit('username', username);
+
+        
+    </script>
+</body>
+
+</html>
