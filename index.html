@@ -19,6 +19,10 @@
         </form>
     </div>
     <script>
+        // ask username
+        var username = prompt('Please tell me your name');
+        socket.emit('username', username);
+
         var sound = new Audio("./assets/notification.mp3");
         var permission = Notification.permission;
         function showNotification() {
@@ -67,11 +71,6 @@
         socket.on('is_online', function (username) {
             $('#messages').append($('<li>').html(username));
         });
-        // ask username
-        var username = prompt('Please tell me your name');
-        socket.emit('username', username);
-
-        
     </script>
 </body>
 
